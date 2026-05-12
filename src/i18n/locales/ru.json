@@ -1702,16 +1702,7 @@
     "sort_default": "По умолчанию",
     "sort_name_asc": "Имя A-Z",
     "sort_plan_desc": "План от высокого",
-    "sort_plan_asc": "План от низкого",
-    "display_settings": "Настройки отображения",
-    "high_threshold_label": "Высокий порог (%)",
-    "high_threshold_hint": "Прогресс-бары ≥ этого значения отображаются зелёным (остаток высокий).",
-    "low_threshold_label": "Низкий порог (%)",
-    "low_threshold_hint": "Прогресс-бары ≥ этого значения отображаются жёлтым; ниже — красным.",
-    "threshold_reset": "Сбросить",
-    "threshold_save": "Сохранить",
-    "threshold_validation": "Высокий порог должен быть больше низкого",
-    "threshold_invalid": "Оба значения должны быть целыми числами от 1 до 99"
+    "sort_plan_asc": "План от низкого"
   },
   "usage_service": {
     "title": "Внешний сервис статистики",

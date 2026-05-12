@@ -1731,16 +1731,7 @@
     "sort_default": "預設順序",
     "sort_name_asc": "名稱 A-Z",
     "sort_plan_desc": "方案高到低",
-    "sort_plan_asc": "方案低到高",
-    "display_settings": "顯示設定",
-    "high_threshold_label": "高閾值 (%)",
-    "high_threshold_hint": "進度條 ≥ 該值時顯示綠色（剩餘充足）。",
-    "low_threshold_label": "低閾值 (%)",
-    "low_threshold_hint": "進度條 ≥ 該值時顯示黃色（尚可）；低於該值顯示紅色。",
-    "threshold_reset": "還原預設",
-    "threshold_save": "儲存",
-    "threshold_validation": "高閾值必須大於低閾值",
-    "threshold_invalid": "兩個值必須是 1 到 99 之間的整數"
+    "sort_plan_asc": "方案低到高"
   },
   "usage_service": {
     "title": "外部用量統計服務",

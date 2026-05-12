@@ -12,4 +12,3 @@ export { useUsageServiceStore } from './useUsageServiceStore';
 export { useQuotaStore } from './useQuotaStore';
 export { useOpenAIEditDraftStore } from './useOpenAIEditDraftStore';
 export { useClaudeEditDraftStore } from './useClaudeEditDraftStore';
-export { useQuotaSettingsStore } from './useQuotaSettingsStore';

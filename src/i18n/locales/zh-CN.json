@@ -1711,16 +1711,7 @@
     "sort_default": "默认顺序",
     "sort_name_asc": "名称 A-Z",
     "sort_plan_desc": "套餐高到低",
-    "sort_plan_asc": "套餐低到高",
-    "display_settings": "显示设置",
-    "high_threshold_label": "高阈值 (%)",
-    "high_threshold_hint": "进度条 ≥ 该值时显示绿色（剩余充足）。",
-    "low_threshold_label": "低阈值 (%)",
-    "low_threshold_hint": "进度条 ≥ 该值时显示黄色（尚可）；低于该值显示红色。",
-    "threshold_reset": "恢复默认",
-    "threshold_save": "保存",
-    "threshold_validation": "高阈值必须大于低阈值",
-    "threshold_invalid": "两个值必须是 1 到 99 之间的整数"
+    "sort_plan_asc": "套餐低到高"
   },
   "usage_service": {
     "title": "外部用量统计服务",

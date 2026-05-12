@@ -85,6 +85,8 @@ type QuotaType = 'antigravity' | 'claude' | 'codex' | 'gemini-cli' | 'kimi';
 export type QuotaSortMode = 'default' | 'name-asc' | 'plan-desc' | 'plan-asc';
 
 const DEFAULT_ANTIGRAVITY_PROJECT_ID = 'bamboo-precept-lgxtn';
+const QUOTA_PROGRESS_HIGH_THRESHOLD = 70;
+const QUOTA_PROGRESS_MEDIUM_THRESHOLD = 30;
 const geminiCliSupplementaryRequestIds = new Map<string, number>();
 const geminiCliSupplementaryCache = new Map<
   string,
@@ -723,7 +725,11 @@ const renderAntigravityItems = (
           h('span', { className: styleMap.quotaReset }, resetLabel)
         )
       ),
-      h(QuotaProgressBar, { percent })
+      h(QuotaProgressBar, {
+        percent,
+        highThreshold: QUOTA_PROGRESS_HIGH_THRESHOLD,
+        mediumThreshold: QUOTA_PROGRESS_MEDIUM_THRESHOLD,
+      })
     );
   });
 };
@@ -827,7 +833,11 @@ const renderCodexItems = (
             h('span', { className: styleMap.quotaReset }, window.resetLabel)
           )
         ),
-        h(QuotaProgressBar, { percent: remaining })
+        h(QuotaProgressBar, {
+          percent: remaining,
+          highThreshold: QUOTA_PROGRESS_HIGH_THRESHOLD,
+          mediumThreshold: QUOTA_PROGRESS_MEDIUM_THRESHOLD,
+        })
       );
     })
   );
@@ -918,7 +928,11 @@ const renderGeminiCliItems = (
             h('span', { className: styleMap.quotaReset }, resetLabel)
           )
         ),
-        h(QuotaProgressBar, { percent })
+        h(QuotaProgressBar, {
+          percent,
+          highThreshold: QUOTA_PROGRESS_HIGH_THRESHOLD,
+          mediumThreshold: QUOTA_PROGRESS_MEDIUM_THRESHOLD,
+        })
       );
     })
   );
@@ -1117,7 +1131,11 @@ const renderClaudeItems = (
             h('span', { className: styleMap.quotaReset }, window.resetLabel)
           )
         ),
-        h(QuotaProgressBar, { percent: remaining })
+        h(QuotaProgressBar, {
+          percent: remaining,
+          highThreshold: QUOTA_PROGRESS_HIGH_THRESHOLD,
+          mediumThreshold: QUOTA_PROGRESS_MEDIUM_THRESHOLD,
+        })
       );
     })
   );
@@ -1334,7 +1352,11 @@ const renderKimiItems = (
             : null
         )
       ),
-      h(QuotaProgressBar, { percent: remaining })
+      h(QuotaProgressBar, {
+        percent: remaining,
+        highThreshold: QUOTA_PROGRESS_HIGH_THRESHOLD,
+        mediumThreshold: QUOTA_PROGRESS_MEDIUM_THRESHOLD,
+      })
     );
   });
 };
