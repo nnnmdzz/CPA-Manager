@@ -5,11 +5,13 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHeaderRefresh } from '@/hooks/useHeaderRefresh';
-import { useAuthStore } from '@/stores';
+import { useAuthStore, useQuotaSettingsStore } from '@/stores';
 import { authFilesApi, configFileApi } from '@/services/api';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
-import { IconSearch } from '@/components/ui/icons';
+import { Button } from '@/components/ui/Button';
+import { Modal } from '@/components/ui/Modal';
+import { IconSearch, IconSettings } from '@/components/ui/icons';
 import {
   QuotaSection,
   ANTIGRAVITY_CONFIG,
@@ -31,6 +33,25 @@ export function QuotaPage() {
   const [error, setError] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortMode, setSortMode] = useState<QuotaSortMode>('default');
+  const [settingsOpen, setSettingsOpen] = useState(false);
+
+  const { highThreshold, lowThreshold, setThresholds, resetThresholds } = useQuotaSettingsStore();
+  const [draftHigh, setDraftHigh] = useState(highThreshold);
+  const [draftLow, setDraftLow] = useState(lowThreshold);
+  const thresholdError =
+    draftHigh <= draftLow ? t('quota_management.threshold_validation') : '';
+
+  const openSettings = () => {
+    setDraftHigh(highThreshold);
+    setDraftLow(lowThreshold);
+    setSettingsOpen(true);
+  };
+
+  const saveSettings = () => {
+    if (thresholdError) return;
+    setThresholds(draftHigh, draftLow);
+    setSettingsOpen(false);
+  };
 
   const disableControls = connectionStatus !== 'connected';
   const sortOptions = useMemo(
@@ -110,7 +131,58 @@ export function QuotaPage() {
             fullWidth
           />
         </div>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={openSettings}
+          title={t('quota_management.display_settings')}
+          aria-label={t('quota_management.display_settings')}
+        >
+          <IconSettings size={16} />
+        </Button>
       </div>
+
+      <Modal
+        open={settingsOpen}
+        title={t('quota_management.display_settings')}
+        onClose={() => setSettingsOpen(false)}
+        footer={
+          <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+            <Button variant="secondary" size="sm" onClick={() => { resetThresholds(); setSettingsOpen(false); }}>
+              {t('quota_management.threshold_reset')}
+            </Button>
+            <Button variant="secondary" size="sm" onClick={() => setSettingsOpen(false)}>
+              {t('common.cancel')}
+            </Button>
+            <Button variant="primary" size="sm" onClick={saveSettings} disabled={!!thresholdError}>
+              {t('quota_management.threshold_save')}
+            </Button>
+          </div>
+        }
+        width={360}
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', padding: '4px 0' }}>
+          <Input
+            label={t('quota_management.high_threshold_label')}
+            type="number"
+            min={1}
+            max={99}
+            value={draftHigh}
+            onChange={(e) => setDraftHigh(Number(e.target.value))}
+            hint={t('quota_management.high_threshold_hint')}
+          />
+          <Input
+            label={t('quota_management.low_threshold_label')}
+            type="number"
+            min={1}
+            max={99}
+            value={draftLow}
+            onChange={(e) => setDraftLow(Number(e.target.value))}
+            hint={t('quota_management.low_threshold_hint')}
+            error={thresholdError}
+          />
+        </div>
+      </Modal>
 
       <QuotaSection
         config={CODEX_CONFIG}
