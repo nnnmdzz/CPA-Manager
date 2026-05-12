@@ -7,6 +7,7 @@ import type { ReactElement, ReactNode } from 'react';
 import type { TFunction } from 'i18next';
 import type { AuthFileItem, ResolvedTheme, ThemeColors } from '@/types';
 import { TYPE_COLORS } from '@/utils/quota';
+import { useQuotaSettingsStore } from '@/stores';
 import styles from '@/pages/QuotaPage.module.scss';
 
 type QuotaStatus = 'idle' | 'loading' | 'success' | 'error';
@@ -19,15 +20,20 @@ export interface QuotaStatusState {
 
 export interface QuotaProgressBarProps {
   percent: number | null;
-  highThreshold: number;
-  mediumThreshold: number;
+  highThreshold?: number;
+  mediumThreshold?: number;
 }
 
 export function QuotaProgressBar({
   percent,
-  highThreshold,
-  mediumThreshold
+  highThreshold: highProp,
+  mediumThreshold: mediumProp
 }: QuotaProgressBarProps) {
+  const storeHigh = useQuotaSettingsStore((s) => s.highThreshold);
+  const storeLow = useQuotaSettingsStore((s) => s.lowThreshold);
+  const highThreshold = highProp ?? storeHigh;
+  const mediumThreshold = mediumProp ?? storeLow;
+
   const clamp = (value: number, min: number, max: number) =>
     Math.min(max, Math.max(min, value));
   const normalized = percent === null ? null : clamp(percent, 0, 100);

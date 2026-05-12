@@ -1711,7 +1711,16 @@
     "sort_default": "Default order",
     "sort_name_asc": "Name A-Z",
     "sort_plan_desc": "Plan high to low",
-    "sort_plan_asc": "Plan low to high"
+    "sort_plan_asc": "Plan low to high",
+    "display_settings": "Display settings",
+    "high_threshold_label": "High threshold (%)",
+    "high_threshold_hint": "Progress bars at or above this % show green (plenty remaining).",
+    "low_threshold_label": "Low threshold (%)",
+    "low_threshold_hint": "Progress bars at or above this % show yellow (enough remaining); below shows red.",
+    "threshold_reset": "Reset to defaults",
+    "threshold_save": "Save",
+    "threshold_validation": "High threshold must be greater than low threshold",
+    "threshold_invalid": "Both values must be integers between 1 and 99"
   },
   "usage_service": {
     "title": "External Usage Service",
