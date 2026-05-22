@@ -39,20 +39,21 @@ Upstream sync runs **automatically** via [`.github/workflows/sync-upstream.yml`]
 
 ### Automatic schedule
 
-- **Cron:** daily at `0 20 * * *` UTC (= **04:00 Beijing time**)
+- **Cron:** hourly at `17 * * * *` UTC
 - **Manual trigger:** GitHub → Actions → **Sync upstream and merge to custom** → **Run workflow** (`workflow_dispatch`)
 
 ### What the auto-sync does
 
 1. Fetch `upstream/main`.
-2. Hard-reset `main` to `upstream/main` and push with `--force-with-lease`.
-3. Merge `origin/main` into `custom` (default merge, no rebase, no auto-conflict-resolution).
-4. On clean merge: push `custom` and explicitly dispatch `docker.yml` to publish a new image.
-5. On merge conflict: abort the merge, fail the workflow loudly, **do not touch `custom`**.
+2. If `origin/main` already matches `upstream/main`, exit cleanly.
+3. Otherwise, hard-reset `main` to `upstream/main` and push with `--force-with-lease`.
+4. Merge `origin/main` into `custom` (default merge, no rebase, no auto-conflict-resolution).
+5. On clean merge: push `custom` and explicitly dispatch `docker.yml` to publish a new image.
+6. On merge conflict: abort the merge, create branch `auto/sync-<short-sha>`, commit the conflicted tree, push it, and open a PR against `custom` for manual resolution. **`custom` itself is not touched.** Future hourly runs will skip while that PR is open (the branch name is keyed by the upstream SHA).
 
 The workflow only force-pushes `main` (which is treated as a mirror). `custom` is never force-pushed by automation.
 
-### Manual flow (use when auto-sync fails)
+### Manual flow (use when auto-sync opens a conflict PR)
 
 ```bash
 # 1. Update main to match upstream exactly

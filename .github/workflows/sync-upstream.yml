@@ -2,13 +2,13 @@ name: Sync upstream and merge to custom
 
 on:
   schedule:
-    # 20:00 UTC daily = 04:00 Beijing time
-    - cron: "0 20 * * *"
+    - cron: "17 * * * *"
   workflow_dispatch:
 
 permissions:
   contents: write
   actions: write
+  pull-requests: write
 
 concurrency:
   group: sync-upstream
@@ -56,19 +56,52 @@ jobs:
           git checkout -B custom origin/custom
           if git merge-base --is-ancestor origin/main HEAD; then
             echo "custom already contains origin/main; nothing to merge"
-            echo "updated=false" >> "$GITHUB_OUTPUT"
+            echo "status=noop" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          if ! git merge --no-edit origin/main; then
-            echo "::error::Merge conflict between origin/main and custom. Workflow will not auto-resolve. See MAINTENANCE.md for the manual resolution flow."
+          if git merge --no-edit origin/main; then
+            git push origin custom
+            echo "status=clean" >> "$GITHUB_OUTPUT"
+          else
             git merge --abort || true
-            exit 1
+            echo "::warning::Merge conflict between origin/main and custom; opening PR for manual resolution."
+            echo "status=conflict" >> "$GITHUB_OUTPUT"
           fi
-          git push origin custom
-          echo "updated=true" >> "$GITHUB_OUTPUT"
+
+      - name: Open conflict PR
+        if: steps.merge_custom.outputs.status == 'conflict'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          UPSTREAM_SHA="$(git rev-parse upstream/main)"
+          SHORT="${UPSTREAM_SHA:0:7}"
+          BRANCH="auto/sync-${SHORT}"
+          EXISTING="$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number' || true)"
+          if [ -n "$EXISTING" ]; then
+            echo "Conflict PR already open for $BRANCH (#$EXISTING)."
+            exit 0
+          fi
+          git checkout -B "$BRANCH" origin/custom
+          git merge --no-edit --no-ff origin/main || true
+          git add -A
+          git -c core.editor=true commit --no-verify \
+              -m "chore(sync): unresolved conflicts from upstream ${SHORT}" || true
+          git push origin "$BRANCH"
+          gh pr create \
+            --base custom \
+            --head "$BRANCH" \
+            --title "Auto-sync conflict: upstream/main -> custom (${SHORT})" \
+            --body "Hourly sync pulled new upstream commits, but merging into \`custom\` produced conflicts.
+
+          - Upstream HEAD: \`${UPSTREAM_SHA}\`
+          - Files with conflict markers are committed for visibility.
+          - **Resolution**: pull this branch, fix conflicts, push, then merge this PR. Or resolve in the GitHub web editor and merge.
+
+          Future hourly runs will skip while this PR is open (branch name is keyed by upstream SHA)."
 
       - name: Trigger Docker build on custom
-        if: steps.merge_custom.outputs.updated == 'true'
+        if: steps.merge_custom.outputs.status == 'clean'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -80,6 +113,6 @@ jobs:
         run: |
           {
             echo "### Sync result"
-            echo "- main updated: ${{ steps.sync_main.outputs.updated }}"
-            echo "- custom updated: ${{ steps.merge_custom.outputs.updated }}"
+            echo "- main updated: ${{ steps.sync_main.outputs.updated || 'n/a' }}"
+            echo "- custom status: ${{ steps.merge_custom.outputs.status || 'skipped' }}"
           } >> "$GITHUB_STEP_SUMMARY"
