@@ -1,8 +1,8 @@
 name: Sync upstream and merge to custom
 
 on:
-  schedule:
-    - cron: "0 8-23/3 * * *"
+  #schedule:
+  #  - cron: "0 8-23/3 * * *"
   workflow_dispatch:
 
 permissions:
